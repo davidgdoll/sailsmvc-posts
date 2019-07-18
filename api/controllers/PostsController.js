@@ -1,53 +1,48 @@
-//Dummy database
-
-const post1 = {
-    id: 1,
-    title: 'Title 1',
-    body: 'Body 1'
-}
-
-const post2 = {
-    id: 2,
-    title: 'Title 2',
-    body: 'Body 2'
-}
-
-const post3 = {
-    id: 3,
-    title: 'Title 3',
-    body: 'Body 3'
-}
-
-const allPosts = [post1, post2, post3]
 
 module.exports = {
-    posts: function(req, res) {
-        res.send(allPosts)
-    },
-
-    create: function(req, res) {
-        const title = req.param('title')
-        const body = req.param('body')
-        const newPost = {
-            id: 4,
-            title: title,
-            body: body
+    posts: async function(req, res) {
+        try {
+            const posts = await Post.find()
+            res.send(posts)
+        } catch (err) {
+            res.serverError(err.toString())
         }
-        allPosts.push(newPost)
-        res.end()
     },
 
-    findById: function(req, res) {
+    create: async function(req, res) {
+        const title = req.body.title
+        const body = req.body.body
+
+        try {
+            const post = await Post.create({
+                title: title,
+                body: body
+            })
+            res.send(post)
+        } catch (err) {
+            res.serverError(err.toString())
+        }
+    },
+
+    findById: async function(req, res) {
         const postId = req.param('postId')
+        try {
+            var post = await Post.find({id: postId});
+            res.send(post)
+        } catch (err) {
+            res.serverError(err.toString())
+        }
+    },
 
-        const filtered = allPosts.filter( p=> {
-            return p.id == postId
-        })
-
-        if(filtered.length == 0) {
-            res.send('Post not found')
-        } else {
-            res.send(filtered[0])
+    delete: async function(req, res) {
+        const postId = req.param('postId')
+        try {
+            await Post.destroy({
+                id: postId
+            })
+            res.end()
+        } catch (err) {
+            res.serverError(err.toString())
         }
     }
 }
