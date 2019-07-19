@@ -18,7 +18,7 @@ module.exports = {
                 title: title,
                 body: body
             })
-            res.send(post)
+            res.redirect('/home')
         } catch (err) {
             res.serverError(err.toString())
         }
